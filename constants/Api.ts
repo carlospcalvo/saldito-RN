@@ -1,0 +1,2 @@
+// USE IP FOR REACT NATIVE
+export const SUPABASE_URL = "http://192.168.0.203:54321";

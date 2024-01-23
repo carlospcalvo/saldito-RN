@@ -1,9 +1,7 @@
+import { SUPABASE_URL } from "@constants/Api";
 import supabase from "@lib/supabase";
 import { Expense, Group, Member, Payment } from "@lib/types";
 import { useQuery } from "@tanstack/react-query";
-
-// USE IP FOR REACT NATIVE
-const SUPABASE_URL = "http://192.168.0.203:54321";
 
 const getUserGroups = async (): Promise<Group[]> => {
 	const {
@@ -45,6 +43,7 @@ const getUserGroups = async (): Promise<Group[]> => {
 		.returns<Partial<Group>[]>();
 
 	if (error) {
+		console.error('Error fetching user groups',error.message)
 		throw error;
 	}
 
