@@ -6,9 +6,19 @@ import { useGroupContext } from "@contexts/GroupContext";
 import UserTotalBalance from "@components/UserTotalBalance";
 import GroupCard from "@components/GroupCard";
 import { Group } from "@lib/types";
+import { Layout, Spinner } from "@ui-kitten/components";
 
 function GroupsScreen() {
-	const { currentUser, groups } = useGroupContext();
+	const { currentUser, groups, isLoading, refetchGroups, isRefetching } =
+		useGroupContext();
+
+	if (isLoading) {
+		return (
+			<Layout style={styles.loadingContainer} level="1">
+				<Spinner size="giant" />
+			</Layout>
+		);
+	}
 
 	const userTotalBalance =
 		groups?.reduce((accumulator, item) => {
@@ -23,30 +33,34 @@ function GroupsScreen() {
 					<UserTotalBalance balance={userTotalBalance} />
 				</View>
 			)}
-			{groups!.length > 0 ? (
-				<View style={styles.listContainer}>
-					<FlashList
-						data={groups}
-						renderItem={({ item }) => (
-							<GroupCard
-								group={item as Group}
-								onPress={() => {
-									router.push(`/groups/${item.id}`);
-								}}
-								key={(item as Group).id}
-							/>
-						)}
-						estimatedItemSize={120}
-					/>
-				</View>
-			) : (
-				<View style={styles.emptyContainer}>
-					<Text style={styles.emptyTitle}>Aún no tenés grupos.</Text>
-					<Text style={styles.emptySubtitle}>
-						Creá tu primer grupo y empezá a registrar tus gastos
-					</Text>
-				</View>
-			)}
+			<View style={styles.listContainer}>
+				<FlashList
+					data={groups}
+					renderItem={({ item }) => (
+						<GroupCard
+							group={item as Group}
+							onPress={() => {
+								router.push(`/groups/${item.id}`);
+							}}
+							key={(item as Group).id}
+						/>
+					)}
+					estimatedItemSize={120}
+					onRefresh={refetchGroups}
+					refreshing={isRefetching}
+					ListEmptyComponent={
+						<View style={styles.emptyContainer}>
+							<Text style={styles.emptyTitle}>
+								Aún no tenés grupos.
+							</Text>
+							<Text style={styles.emptySubtitle}>
+								Creá tu primer grupo y empezá a registrar tus
+								gastos
+							</Text>
+						</View>
+					}
+				/>
+			</View>
 		</View>
 	);
 }
@@ -57,6 +71,11 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		alignItems: "center",
+	},
+	loadingContainer: {
+		flex: 1,
+		alignItems: "center",
+		justifyContent: "center",
 	},
 	titleContainer: {
 		width: "100%",

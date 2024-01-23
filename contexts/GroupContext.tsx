@@ -7,10 +7,16 @@ import useUserGroups from "@hooks/services/groups/useUserGroups";
 import { User } from "@supabase/supabase-js";
 // import { usePathname, useRouter } from "next/navigation";
 import useCurrentUser from "@hooks/auth/useCurrentUser";
+import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
 
 export interface IGroupContext {
 	currentUser: User | null | undefined;
 	groups: Group[] | undefined;
+	isLoading: boolean;
+	isRefetching: boolean;
+	refetchGroups: (
+		options?: RefetchOptions | undefined
+	) => Promise<QueryObserverResult<Group[], Error>>;
 	duePayments: Partial<Payment>[];
 	// addExpense: (newExpense: ExpenseInput) => void;
 }
@@ -23,7 +29,13 @@ export const GroupContext = createContext<IGroupContext | null>(null);
 
 export const GroupContextProvider = ({ children }: IContextProvider) => {
 	const { data: currentUser } = useCurrentUser();
-	const { data: groups, isLoading, isError } = useUserGroups();
+	const {
+		data: groups,
+		isLoading,
+		isError,
+		refetch,
+		isRefetching,
+	} = useUserGroups();
 
 	// const currentGroup: Group | undefined = getCurrentGroup(pathname, groups);
 	// const duePayments = currentGroup ? simplifyDebts(currentGroup.members) : [];
@@ -35,6 +47,9 @@ export const GroupContextProvider = ({ children }: IContextProvider) => {
 	const value: IGroupContext = {
 		currentUser,
 		groups: groups ?? [],
+		isLoading,
+		refetchGroups: refetch,
+		isRefetching,
 		// users: USERS,
 		// addExpense,
 		duePayments: [],
