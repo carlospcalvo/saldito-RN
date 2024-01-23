@@ -1,4 +1,4 @@
-import { memo, useEffect, useLayoutEffect } from "react";
+import { memo } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { router } from "expo-router";
 import { FlashList } from "@shopify/flash-list";
@@ -21,9 +21,10 @@ function GroupsScreen() {
 	}
 
 	const userTotalBalance =
-		groups?.reduce((accumulator, item) => {
-			return accumulator + item.userBalance;
-		}, 0) ?? 0;
+		groups?.reduce(
+			(accumulator, item) => accumulator + item.userBalance,
+			0
+		) ?? 0;
 
 	return (
 		<View style={styles.container}>
