@@ -1,10 +1,23 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { formatCurrency } from "@lib/number-formatter"; // Assuming this is available
+import { formatCurrency } from "@lib/number-formatter";
+import Colors from "@constants/Colors";
 
 interface BalanceTextProps {
 	balance: number;
 	isCurrentUser: boolean;
+}
+
+function getSubtitle(balance: number, isCurrentUser: boolean) {
+	if (balance > 0) {
+		return `${isCurrentUser ? "Recuperás" : "Recupera"} ${formatCurrency(
+			balance ?? 0
+		)}`;
+	}
+
+	return `${isCurrentUser ? "Debés" : "Debe"} ${formatCurrency(
+		(balance ?? 0) * -1
+	)}`;
 }
 
 export default function BalanceText({
@@ -19,34 +32,30 @@ export default function BalanceText({
 		);
 	}
 
-	const formattedBalance = formatCurrency(balance);
-	const verb = isCurrentUser ? "Recuperás" : "Recupera";
 	const color = balance > 0 ? "Green" : "Red";
 
 	return (
 		<View style={styles.container}>
 			<Text style={[styles.text, styles[`text${color}`]]}>
-				{`${verb} ${formattedBalance}`}
+				{getSubtitle(balance, isCurrentUser)}
 			</Text>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
-	container: {
-		// Adjust layout as needed
-	},
+	container: {},
 	text: {
-		fontSize: 14, // Adjust font size
+		fontSize: 14,
 		fontFamily: "Raleway_500Medium",
 	},
 	textDefault: {
-		color: "gray",
+		color: Colors.common.defaultGrey,
 	},
 	textGreen: {
-		color: "green",
+		color: Colors.common.positiveBalanceColor,
 	},
 	textRed: {
-		color: "red",
+		color: Colors.common.negativeBalanceColor,
 	},
 });
