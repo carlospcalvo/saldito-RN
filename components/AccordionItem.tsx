@@ -1,5 +1,5 @@
 import React, { memo, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import Icon from "@expo/vector-icons/FontAwesome6";
 import { Member } from "@lib/types";
 import { Avatar } from "@ui-kitten/components";
@@ -16,24 +16,28 @@ function AccordionItem({ member }: AccordionItemProps) {
 
 	return (
 		<View style={styles.container}>
-			<TouchableOpacity style={styles.header} onPress={toggleItem}>
-				<View>
-					<Avatar
-						source={{ uri: member?.profile?.avatar }}
-						style={[styles.avatar, { height: 56, width: 56 }]}
+			<Pressable onPress={toggleItem}>
+				<View style={styles.header}>
+					<View>
+						<Avatar
+							source={{ uri: member?.profile?.avatar }}
+							style={[styles.avatar, { height: 56, width: 56 }]}
+						/>
+					</View>
+					<View style={styles.headerTextContainer}>
+						<Text style={styles.title}>
+							{member?.profile?.name}
+						</Text>
+						<Text style={styles.subtitle}>{member?.balance}</Text>
+					</View>
+					<Icon
+						name={expanded ? "chevron-up" : "chevron-down"}
+						size={20}
+						style={styles.icon}
+						color="#bbb"
 					/>
 				</View>
-				<View style={styles.headerTextContainer}>
-					<Text style={styles.title}>{member?.profile?.name}</Text>
-					<Text style={styles.subtitle}>{member?.balance}</Text>
-				</View>
-				<Icon
-					name={expanded ? "chevron-up" : "chevron-down"}
-					size={20}
-					style={styles.icon}
-					color="#bbb"
-				/>
-			</TouchableOpacity>
+			</Pressable>
 			{expanded && (
 				<View style={styles.body}>
 					<Text>{member.balance}</Text>
