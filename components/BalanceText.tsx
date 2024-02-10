@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { formatCurrency } from "@lib/number-formatter";
+import { formatCurrency } from "@lib/helpers/number-formatter";
 import Colors from "@constants/Colors";
 
 interface BalanceTextProps {
@@ -25,9 +25,12 @@ export default function BalanceText({
 	isCurrentUser,
 }: BalanceTextProps) {
 	if (!balance) {
+		const text = isCurrentUser
+			? "No tenés saldos pendientes"
+			: "No tiene saldos pendientes";
 		return (
 			<View style={styles.container}>
-				<Text style={styles.textDefault}>Cuenta saldada</Text>
+				<Text style={styles.textDefault}>{text}</Text>
 			</View>
 		);
 	}

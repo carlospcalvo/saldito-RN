@@ -13,6 +13,7 @@ const login = async ({ email, password }: LoginArgs) => {
 		password,
 	});
 	if (error) {
+		console.error(error)
 		Alert.alert("Error al iniciar sesión", error.message);
 	}
 };

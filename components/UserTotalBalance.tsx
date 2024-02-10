@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { formatCurrency } from "@lib/number-formatter";
+import { formatCurrency } from "@lib/helpers/number-formatter";
+import Colors from "@constants/Colors";
 
 export default function UserTotalBalance({ balance }: { balance: number }) {
 	if (balance === 0) {
@@ -41,12 +42,12 @@ const styles = StyleSheet.create({
 		fontFamily: "Raleway_600SemiBold",
 	},
 	textDefault: {
-		color: "gray",
+		color: Colors.common.defaultGrey,
 	},
 	textGreen: {
-		color: "green",
+		color: Colors.common.positiveBalanceColor,
 	},
 	textRed: {
-		color: "red",
+		color: Colors.common.negativeBalanceColor,
 	},
 });

@@ -15,9 +15,13 @@ export default function Page() {
 		});
 
 		supabase.auth.onAuthStateChange((_event, session) => {
-			if (session) {
-				router.replace("/groups");
-			} else {
+			// if (session) {
+			// 	Alert.alert("onAuthStateChange", "Redirecting to /groups");
+			// 	router.replace("/groups");
+			// } else {
+			// 	router.replace("/auth/login");
+			// }
+			if (!session) {
 				router.replace("/auth/login");
 			}
 		});

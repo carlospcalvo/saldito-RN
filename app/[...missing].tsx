@@ -1,7 +1,10 @@
-import { Link, Stack } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { Link, Stack, useLocalSearchParams } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
 export default function NotFoundScreen() {
+	const searchParams = useLocalSearchParams();
+	console.log("404: ", { searchParams });
 	return (
 		<>
 			<Stack.Screen options={{ title: "Oops!" }} />
@@ -12,6 +15,7 @@ export default function NotFoundScreen() {
 					<Text style={styles.linkText}>Go to home screen!</Text>
 				</Link>
 			</View>
+			<StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
 		</>
 	);
 }

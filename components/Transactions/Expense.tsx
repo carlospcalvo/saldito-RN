@@ -1,54 +1,28 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { formatCurrencyRounded } from "@lib/number-formatter";
+import { View, Text, StyleSheet, Pressable } from "react-native";
+import { formatCurrencyRounded } from "@lib/helpers/number-formatter";
 import { useGroupContext } from "@contexts/GroupContext";
 // import ExpenseBalanceChip from "./ExpenseBalanceChip";
-// import ReceiptIcon from "@/lib/icons/ReceiptIcon"; // Assuming ReceiptIcon is a React Native component
 import Icon from "@expo/vector-icons/FontAwesome6";
-import { Expense, ExpenseParticipant, Member, UserID } from "@lib/types";
+import {
+	Expense as ExpenseType,
+	ExpenseParticipant,
+	Member,
+	UserID,
+} from "@lib/types";
 import { partition } from "@lib/helpers/array-helpers";
 import { formatExpenseLabel } from "@lib/helpers/string-helpers";
+import useCurrentUser from "@hooks/auth/useCurrentUser";
+import { router } from "expo-router";
 
-interface ExpenseListItemProps {
-	expense: Expense;
-	members: Member[];
+interface ExpenseProps {
+	expense: ExpenseType;
 }
 
-function calculateExpenseBalance({
-	hasParticipated,
-	payers,
-	debtors,
-	userId,
-}: {
-	hasParticipated: boolean;
-	payers: ExpenseParticipant[];
-	debtors: ExpenseParticipant[];
-	userId: UserID;
-}): { expenseBalance: number; userCredit: number } {
-	let expenseBalance = 0;
-	let userCreditAmount = 0;
-	let userDebtAmount = 0;
-
-	if (hasParticipated) {
-		userCreditAmount =
-			payers.find((participant) => participant.user_id === userId)
-				?.amount ?? 0;
-		userDebtAmount =
-			debtors.find((participant) => participant.user_id === userId)
-				?.amount ?? 0;
-
-		expenseBalance = userCreditAmount - userDebtAmount;
-	}
-
-	return { expenseBalance, userCredit: userCreditAmount };
-}
-
-export default function ExpenseListItem({
-	expense,
-	members,
-}: ExpenseListItemProps) {
-	const { id, amount, description, expense_participants } = expense;
-	const { currentUser } = useGroupContext();
+export default function Expense({ expense }: ExpenseProps) {
+	const { amount, description, expense_participants } = expense;
+	const { data: currentUser } = useCurrentUser();
+	const { currentGroup, members } = useGroupContext();
 	const [payers, debtors] = partition(
 		expense_participants,
 		(participant) => participant.participated_as === "creditor"
@@ -62,11 +36,18 @@ export default function ExpenseListItem({
 		hasParticipated,
 		payers,
 		debtors,
-		userId: currentUser!.id,
+		userId: currentUser?.id,
 	});
 
 	return (
-		<TouchableOpacity style={styles.container} key={id}>
+		<Pressable
+			style={styles.container}
+			onPress={() =>
+				router.push(
+					`/expense/${expense.id}?groupId=${currentGroup?.id}`
+				)
+			}
+		>
 			<View style={styles.iconContainer}>
 				<Icon
 					name="receipt"
@@ -81,7 +62,7 @@ export default function ExpenseListItem({
 						payers,
 						members,
 						amount,
-						userId: currentUser!.id,
+						userId: currentUser?.id,
 						userCredit,
 					})}
 				</Text>
@@ -95,7 +76,7 @@ export default function ExpenseListItem({
 				</Text>
 				{/* <ExpenseBalanceChip expenseBalance={expenseBalance} /> */}
 			</View>
-		</TouchableOpacity>
+		</Pressable>
 	);
 }
 
@@ -139,3 +120,32 @@ const styles = StyleSheet.create({
 		fontFamily: "Raleway_400Regular",
 	},
 });
+
+function calculateExpenseBalance({
+	hasParticipated,
+	payers,
+	debtors,
+	userId,
+}: {
+	hasParticipated: boolean;
+	payers: ExpenseParticipant[];
+	debtors: ExpenseParticipant[];
+	userId: UserID | undefined;
+}): { expenseBalance: number; userCredit: number } {
+	let expenseBalance = 0;
+	let userCreditAmount = 0;
+	let userDebtAmount = 0;
+
+	if (hasParticipated) {
+		userCreditAmount =
+			payers.find((participant) => participant.user_id === userId)
+				?.amount ?? 0;
+		userDebtAmount =
+			debtors.find((participant) => participant.user_id === userId)
+				?.amount ?? 0;
+
+		expenseBalance = userCreditAmount - userDebtAmount;
+	}
+
+	return { expenseBalance, userCredit: userCreditAmount };
+}

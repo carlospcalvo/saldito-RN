@@ -1,16 +1,24 @@
-import { memo } from "react";
+import React, { memo } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { router } from "expo-router";
 import { FlashList } from "@shopify/flash-list";
-import { useGroupContext } from "@contexts/GroupContext";
+
 import UserTotalBalance from "@components/UserTotalBalance";
-import GroupCard from "@components/GroupCard";
+import GroupCard from "@components/Groups/GroupCard";
 import { Group } from "@lib/types";
 import { Layout, Spinner } from "@ui-kitten/components";
+import useUserGroups from "@hooks/services/groups/useUserGroups";
+import { useIsFocused } from "@react-navigation/native";
+import { StatusBar } from "expo-status-bar";
 
 function GroupsScreen() {
-	const { currentUser, groups, isLoading, refetchGroups, isRefetching } =
-		useGroupContext();
+	const {
+		data: groups,
+		isLoading,
+		refetch: refetchGroups,
+		isRefetching,
+	} = useUserGroups();
+	const screenIsFocused = useIsFocused();
 
 	if (isLoading) {
 		return (
@@ -48,7 +56,7 @@ function GroupsScreen() {
 					)}
 					estimatedItemSize={120}
 					onRefresh={refetchGroups}
-					refreshing={isRefetching}
+					refreshing={isRefetching && screenIsFocused}
 					ListEmptyComponent={
 						<View style={styles.emptyContainer}>
 							<Text style={styles.emptyTitle}>
@@ -62,6 +70,7 @@ function GroupsScreen() {
 					}
 				/>
 			</View>
+			<StatusBar style="dark" />
 		</View>
 	);
 }

@@ -1,10 +1,11 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Image } from "expo-image";
-import { Group } from "@lib/types";
-import AvatarList from "./AvatarList";
+import AvatarList from "../AvatarList";
+import { useGroupContext } from "@contexts/GroupContext";
 
-export default function GroupDetailHeader({ group }: { group?: Group }) {
+export default function GroupDetailHeader() {
+	const { currentGroup: group, members } = useGroupContext();
 	return (
 		<View style={styles.container}>
 			<View style={styles.imageContainer}>
@@ -18,7 +19,7 @@ export default function GroupDetailHeader({ group }: { group?: Group }) {
 			</View>
 			<View style={styles.textContainer}>
 				<Text style={styles.title}>{group?.name}</Text>
-				<AvatarList users={group?.members ?? []} />
+				<AvatarList users={members} />
 			</View>
 		</View>
 	);

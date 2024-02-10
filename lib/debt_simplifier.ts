@@ -5,13 +5,17 @@ import { Member, Payment, TransactionType } from "@lib/types";
 /**
  * Optimizes debt settlements within a group by minimizing the number of transactions required.
  *
- * @param {Member[]} groupMembers - An array of members in the group, each with a `user_id` and `balance` property.
+ * @param {Member[] | undefined} groupMembers - An array of members in the group, each with a `user_id` and `balance` property.
  * @returns {Partial<Payment>[]} - An array of simplified payment transactions reflecting the debt settlements,
  *   containing only the `type`, `from_user`, `to_user`, and `amount` properties.
  */
 export default function simplifyDebts(
-	groupMembers: Member[]
+	groupMembers: Member[] | undefined
 ): Partial<Payment>[] {
+	if(!groupMembers){ 
+		return [];
+	}
+
 	// Calculate balances for each user
 	const [creditors, debtors] = partition(
 		groupMembers,

@@ -1,7 +1,8 @@
 import React from "react";
 import { Stack, router, useLocalSearchParams } from "expo-router";
-import { Button, TouchableOpacity, Alert } from "react-native";
+import { TouchableOpacity, Alert } from "react-native";
 import Icon from "@expo/vector-icons/FontAwesome6";
+import BackButton from "@components/BackButton";
 
 export default function GroupsLayout() {
 	const { id } = useLocalSearchParams();
@@ -22,8 +23,10 @@ export default function GroupsLayout() {
 				options={{
 					title: "",
 					headerTitle: undefined,
-					headerBackVisible: true,
-					headerBackTitle: "Volver",
+					headerBackVisible: false,
+					headerLeft: () => (
+						<BackButton onPress={() => router.push(`/groups`)} />
+					),
 					headerRight: () => (
 						<TouchableOpacity
 							onPress={() =>
@@ -37,7 +40,7 @@ export default function GroupsLayout() {
 									  )
 							}
 						>
-							<Icon name="gear" color="black" size={26} />
+							<Icon name="gear" color="black" size={20} />
 						</TouchableOpacity>
 					),
 				}}

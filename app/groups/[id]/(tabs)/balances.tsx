@@ -1,38 +1,47 @@
 import React from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
-import { useGlobalSearchParams } from "expo-router";
+import { SafeAreaView, StyleSheet, View } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import useCurrentUser from "@hooks/auth/useCurrentUser";
-import useGroupBalances from "@hooks/services/groups/useGroupBalances";
+import { useGroupContext } from "@contexts/GroupContext";
+import GroupBalancesItem from "@components/Balances/GroupBalancesItem";
 import { Member } from "@lib/types";
-import AccordionItem from "@components/AccordionItem";
+import Dimensions from "@constants/Dimensions";
+import useUserGroups from "@hooks/services/groups/useUserGroups";
 
-export default function Balances() {
-	const { id } = useGlobalSearchParams();
-	const currentUser = useCurrentUser();
-	const { data: members } = useGroupBalances(id as string);
+export default function BalancesScreen() {
+	const { members } = useGroupContext();
+	const { refetch: refetchGroups, isRefetching } = useUserGroups();
 
 	return (
 		<View style={styles.container}>
-			<FlashList
-				data={members}
-				renderItem={({ item }) => (
-					<AccordionItem
-						member={item as Member}
-						key={(item as Member).user_id}
-					/>
-				)}
-				estimatedItemSize={120}
-			/>
+			<SafeAreaView style={styles.listSafeArea}>
+				<FlashList
+					contentContainerStyle={styles.listContainer}
+					data={members}
+					renderItem={({ item }) => (
+						<GroupBalancesItem
+							member={item as Member}
+							key={(item as Member).user_id}
+						/>
+					)}
+					estimatedItemSize={20}
+					onRefresh={refetchGroups}
+					refreshing={isRefetching}
+				/>
+			</SafeAreaView>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
 	container: {
+		flex: 1,
+	},
+	listSafeArea: {
 		minHeight: 2,
-		height: Dimensions.get("screen").height,
-		width: Dimensions.get("screen").width,
+		height: Dimensions.screen.height - Dimensions.groupDetailHeader.height,
+		width: Dimensions.screen.width,
+	},
+	listContainer: {
 		paddingHorizontal: 12,
 		paddingVertical: 6,
 	},

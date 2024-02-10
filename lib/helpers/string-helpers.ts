@@ -1,4 +1,4 @@
-import { formatCurrencyRounded } from "@lib/number-formatter";
+import { formatCurrencyRounded } from "@lib/helpers/number-formatter";
 import { ExpenseParticipant, Member, UserID } from "@lib/types";
 
 /**
@@ -22,7 +22,7 @@ export function formatExpenseLabel({
 	payers: ExpenseParticipant[];
 	members: Member[];
 	amount: number;
-	userId: UserID;
+	userId: UserID | undefined;
 	userCredit: number;
 }) {
 	const payersIds: string[] = [];
@@ -46,4 +46,17 @@ export function formatExpenseLabel({
 		?.profile.name;
 
 	return `${payerName} pagó ${formattedAmount}`;
+}
+
+/**
+ * Capitalizes the first letter of a given string.
+ *
+ * @param str - The string to capitalize.
+ * @returns The string with the first letter capitalized.
+ * @example
+ * const capitalizedString = capitalizeFirstLetter('hello world');
+ * console.log(capitalizedString); // Output: 'Hello world'
+ */
+export function capitalizeFirstLetter(str: string) {
+	return str.charAt(0).toUpperCase() + str.slice(1);
 }

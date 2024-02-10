@@ -19,7 +19,8 @@
 		".expo/types/**/*.ts",
 		"expo-env.d.ts",
 		"model/schema.ts",
-		"model/models.js"
+		"model/models.js",
+		"lib/helpers/debounce.js"
 	],
 	"exclude": ["node_modules"]
 }

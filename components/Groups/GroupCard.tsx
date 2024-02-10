@@ -2,8 +2,8 @@ import React from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { Group } from "@lib/types";
-import CornerRibbon from "./CornerRibbon";
-import BalanceText from "./BalanceText";
+import CornerRibbon from "../CornerRibbon";
+import BalanceText from "../BalanceText";
 
 interface GroupCardProps {
 	group: Group;

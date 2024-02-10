@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Alert, ImageProps, StyleSheet, View } from "react-native";
+import {
+	Alert,
+	GestureResponderEvent,
+	ImageProps,
+	StyleSheet,
+	View,
+} from "react-native";
 import supabase from "@lib/supabase";
 import { Button, /* Icon, */ Input } from "@ui-kitten/components";
 import {
@@ -9,6 +15,7 @@ import {
 import Icon from "@expo/vector-icons/FontAwesome6";
 import useOAuthSignIn from "@hooks/auth/useOAuthSignIn";
 import usePasswordLogin from "@hooks/auth/usePasswordLogin";
+import { router } from "expo-router";
 
 export default function Login() {
 	const passwordLoginMutation = usePasswordLogin();
@@ -34,6 +41,10 @@ export default function Login() {
 			/>
 		</TouchableWithoutFeedback>
 	);
+
+	if (OAuthSignInMutation.isSuccess || passwordLoginMutation.isSuccess) {
+		router.replace("/");
+	}
 
 	return (
 		<View style={styles.container}>
@@ -67,14 +78,17 @@ export default function Login() {
 			<View style={[styles.verticallySpaced, styles.mt20]}>
 				<Button
 					disabled={passwordLoginMutation.isPending}
-					onPress={() => passwordLoginMutation.mutate(formState)}
+					onPress={(e: GestureResponderEvent) => {
+						e.preventDefault();
+						passwordLoginMutation.mutate(formState);
+					}}
 				>
 					Iniciar sesión
 				</Button>
 			</View>
 			<View style={[styles.verticallySpaced, styles.mt20]}>
 				<Button
-					disabled={passwordLoginMutation.isPending}
+					disabled={OAuthSignInMutation.isPending}
 					onPress={() => OAuthSignInMutation.mutate("google")}
 				>
 					Ingresar con Google

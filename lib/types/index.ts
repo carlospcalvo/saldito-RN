@@ -60,6 +60,38 @@ export type Expense = Transaction & {
 	expense_participants: ExpenseParticipant[];
 };
 
+export type ExpenseDetailParticipant = {
+	id: string;
+	expense_id: string;
+	name: string;
+	avatar: string;
+	credit: number | undefined;
+	debt: number | undefined;
+};
+
+export type PaymentDetail = {
+	id: string;
+	group_id: string;
+	amount: number;
+	created_at: string;
+	currency: string;
+	date: string;
+	created_by: {
+		id: string;
+		name: string;
+	};
+	from_user: {
+		id: string;
+		avatar: string;
+		name: string;
+	};
+	to_user: {
+		id: string;
+		avatar: string;
+		name: string;
+	};
+};
+
 export type ExpenseParticipant = {
 	amount: number;
 	user_id: UserID;
@@ -88,6 +120,7 @@ export enum TransactionType {
 export interface Transaction {
 	id: string;
 	created_at: string;
+	created_by: UserID;
 	date: string;
 	type?: TransactionType;
 }
@@ -112,33 +145,75 @@ export type Payment = Transaction & {
 // Balance: Represents a user's balance (amount owed or owned).
 export type Balance = Map<number, number>;
 
-
 // Type Guard functions
 
 export function isTransaction(item: any): item is Transaction {
-  return (
-    typeof item === 'object' &&
-    item !== null &&
-    'id' in item &&
-    typeof item.id === 'string' &&
-    'created_at' in item &&
-    typeof item.created_at === 'string' &&
-    'date' in item &&
-    typeof item.date === 'string'
-  );
+	return (
+		typeof item === "object" &&
+		item !== null &&
+		"id" in item &&
+		typeof item.id === "string" &&
+		"created_at" in item &&
+		typeof item.created_at === "string" &&
+		"date" in item &&
+		typeof item.date === "string"
+	);
 }
 
 export function isExpense(item: any): item is Expense {
-  return (
-    typeof item === 'object' &&
-    item !== null &&
-    'amount' in item &&
-    typeof item.amount === 'number' &&
-    'group_id' in item &&
-    typeof item.group_id === 'string' &&
-    'description' in item &&
-    typeof item.description === 'string' &&
-    'expense_participants' in item &&
-    Array.isArray(item.expense_participants)
-  );
+	return (
+		typeof item === "object" &&
+		item !== null &&
+		"amount" in item &&
+		typeof item.amount === "number" &&
+		"group_id" in item &&
+		typeof item.group_id === "string" &&
+		"description" in item &&
+		typeof item.description === "string" &&
+		"expense_participants" in item &&
+		Array.isArray(item.expense_participants)
+	);
+}
+
+export function isExpenseDetailParticipant(
+	item: any
+): item is ExpenseDetailParticipant {
+	return (
+		typeof item === "object" &&
+		item !== null &&
+		"id" in item &&
+		typeof item.id === "string" &&
+		"name" in item &&
+		typeof item.name === "string" &&
+		"avatar" in item &&
+		typeof item.avatar === "string" &&
+		"credit" in item &&
+		"debt" in item
+	);
+}
+
+export function isMember(value: any): value is Member {
+	return (
+		typeof value === "object" &&
+		value !== null &&
+		"is_admin" in value &&
+		typeof value.is_admin === "boolean" &&
+		"user_id" in value &&
+		typeof value.user_id === "string" &&
+		"balance" in value &&
+		typeof value.balance === "number" &&
+		"profile" in value &&
+		isProfile(value.profile)
+	);
+}
+
+export function isProfile(value: any): value is Profile {
+	return (
+		typeof value === "object" &&
+		value !== null &&
+		"avatar" in value &&
+		typeof value.avatar === "string" &&
+		"name" in value &&
+		typeof value.name === "string"
+	);
 }

@@ -99,46 +99,48 @@ function RootLayoutNav() {
 		<ThemeContext.Provider value={{ theme, toggleTheme }}>
 			<ApplicationProvider {...eva} theme={eva[theme as ThemeKey]}>
 				<QueryClientProvider client={queryClient}>
-					<GroupContextProvider>
-						<Stack>
-							<Stack.Screen
-								name="index"
-								options={{
-									headerBackVisible: false,
-								}}
-							/>
-							<Stack.Screen
-								name="auth"
-								options={{ headerShown: false }}
-							/>
-							<Stack.Screen
-								name="groups"
-								options={{ headerShown: false }}
-							/>
-							<Stack.Screen
-								name="profile"
-								options={{ title: "Tu perfil" }}
-							/>
-							<Stack.Screen
-								name="modal"
-								options={{
-									presentation: "modal",
-									headerLeft: () => (
-										<Button
-											title="Cerrar"
-											onPress={() => router.back()}
-										/>
-									),
-									headerRight: () => (
-										<Button
-											title="OK"
-											onPress={() => router.back()}
-										/>
-									),
-								}}
-							/>
-						</Stack>
-					</GroupContextProvider>
+					<Stack>
+						<Stack.Screen
+							name="index"
+							options={{
+								headerBackVisible: false,
+							}}
+						/>
+						<Stack.Screen
+							name="auth"
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
+							name="groups"
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
+							name="profile"
+							options={{ title: "Tu perfil" }}
+						/>
+						<Stack.Screen
+							name="(transaction-detail)"
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
+							name="modal"
+							options={{
+								presentation: "modal",
+								headerLeft: () => (
+									<Button
+										title="Cerrar"
+										onPress={() => router.back()}
+									/>
+								),
+								headerRight: () => (
+									<Button
+										title="OK"
+										onPress={() => router.back()}
+									/>
+								),
+							}}
+						/>
+					</Stack>
 				</QueryClientProvider>
 			</ApplicationProvider>
 		</ThemeContext.Provider>

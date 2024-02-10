@@ -1,15 +1,16 @@
-import GroupDetailHeader from "@components/GroupDetailHeader";
+import React, { useState } from "react";
+import GroupDetailHeader from "@components/Groups/GroupDetailHeader";
 import { useGroupContext } from "@contexts/GroupContext";
+import simplifyDebts from "@lib/debt_simplifier";
 import {
 	MaterialTopTabNavigationEventMap,
 	MaterialTopTabNavigationOptions,
 	createMaterialTopTabNavigator,
 } from "@react-navigation/material-top-tabs";
 import { ParamListBase, TabNavigationState } from "@react-navigation/native";
-import { useLocalSearchParams, withLayoutContext } from "expo-router";
-import React from "react";
+import { router, useLocalSearchParams, withLayoutContext } from "expo-router";
 
-const { Navigator, Screen } = createMaterialTopTabNavigator();
+const { Navigator } = createMaterialTopTabNavigator();
 const MaterialTopTabs = withLayoutContext<
 	MaterialTopTabNavigationOptions,
 	typeof Navigator,
@@ -18,12 +19,9 @@ const MaterialTopTabs = withLayoutContext<
 >(Navigator);
 
 export default function GroupTabsLayout() {
-	const { id } = useLocalSearchParams();
-	const { groups } = useGroupContext();
-	const currentGroup = groups?.find((group) => group.id === id);
 	return (
 		<>
-			<GroupDetailHeader group={currentGroup} />
+			<GroupDetailHeader />
 			<MaterialTopTabs
 				screenOptions={{
 					tabBarIndicatorStyle: {

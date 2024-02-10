@@ -1,112 +1,86 @@
 import React from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { useGlobalSearchParams } from "expo-router";
+import { StyleSheet, View, SafeAreaView, Pressable, Text } from "react-native";
 import { FlashList } from "@shopify/flash-list";
+import Icon from "@expo/vector-icons/FontAwesome6";
 import { useGroupContext } from "@contexts/GroupContext";
-import { formatCurrency } from "@lib/number-formatter";
-import { add, intlFormat } from "date-fns";
-import { isExpense, isTransaction } from "@lib/types";
-import { mapTransactions } from "@lib/helpers/array-helpers";
-import ExpenseListItem from "@components/ExpenseListItem";
+import ExpenseListItem from "@components/Transactions/ExpenseListItem";
+import Dimensions from "@constants/Dimensions";
+import useUserGroups from "@hooks/services/groups/useUserGroups";
+import { isTransaction } from "@lib/types";
+import { router } from "expo-router";
 
+// TODO: refactor to use infinite query
 export default function Expenses() {
-	const { id } = useGlobalSearchParams();
-	const { groups } = useGroupContext();
-	const currentGroup = groups?.find((group) => group.id === id);
-	const transactions = currentGroup
-		? [...currentGroup?.expenses, ...currentGroup?.payments]
-		: [];
+	const { currentGroup, orderedTxs } = useGroupContext();
+	const { refetch: refetchGroups, isRefetching } = useUserGroups();
 
-	const orderedTxs = mapTransactions(transactions);
+	const stickyHeaderIndices = orderedTxs
+		?.map((item, index) => {
+			if (typeof item === "string") {
+				return index;
+			} else {
+				return null;
+			}
+		})
+		.filter((item) => item !== null) as number[];
 
 	return (
 		<View style={styles.container}>
-			{!!currentGroup?.expenses?.length && (
-				<FlashList
-					data={orderedTxs}
-					renderItem={({ item }) => {
-						if (isTransaction(item)) {
-							// Render item
-							if (isExpense(item)) {
-								return (
-									<ExpenseListItem
-										expense={item}
-										members={currentGroup.members}
-									/>
-								);
-							}
-
-							return (
-								<Text>{`${"Pago"} - ${formatCurrency(
-									item.amount
-								)}`}</Text>
-							);
+			<SafeAreaView style={styles.listSafeArea}>
+				{!!orderedTxs?.length && (
+					<FlashList
+						data={orderedTxs}
+						renderItem={ExpenseListItem}
+						getItemType={(item) =>
+							isTransaction(item) ? "row" : "sectionHeader"
 						}
-
-						// Rendering header
-						return (
-							<View style={styles.listSectionHeader}>
-								<View style={styles.chip}>
-									<Text style={styles.listSectionHeaderText}>
-										{intlFormat(
-											add(item, { hours: 3 }),
-											{
-												year: "numeric",
-												month: "long",
-												day: "numeric",
-											},
-											{
-												locale: "es-AR",
-											}
-										)}
-									</Text>
-								</View>
-							</View>
-						);
-					}}
-					getItemType={(item) => {
-						// To achieve better performance, specify the type based on the item
-						return isTransaction(item) ? "row" : "sectionHeader";
-					}}
-					stickyHeaderIndices={
-						orderedTxs
-							?.map((item, index) => {
-								if (typeof item === "string") {
-									return index;
-								} else {
-									return null;
-								}
-							})
-							.filter((item) => item !== null) as number[]
+						stickyHeaderIndices={stickyHeaderIndices}
+						estimatedItemSize={100}
+						onRefresh={refetchGroups}
+						refreshing={isRefetching}
+					/>
+				)}
+				<Pressable
+					style={styles.fab}
+					onPress={() =>
+						router.push(
+							`/(transaction-detail)/expense/new?groupId=${currentGroup?.id}`
+						)
 					}
-					estimatedItemSize={100}
-				/>
-			)}
+				>
+					<Icon name="plus" color="white" size={24} />
+				</Pressable>
+			</SafeAreaView>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
 	container: {
+		flex: 1,
+	},
+	listSafeArea: {
 		minHeight: 2,
-		height: Dimensions.get("screen").height,
-		width: Dimensions.get("screen").width,
+		height: Dimensions.screen.height - Dimensions.groupDetailHeader.height,
+		width: Dimensions.screen.width,
 	},
-	listSectionHeader: {
-		width: "100%",
+	fab: {
+		width: 64,
+		height: 64,
+		borderRadius: 90,
+		backgroundColor: "green",
+		position: "absolute",
+		bottom: 32,
+		right: 28,
+		justifyContent: "center",
 		alignItems: "center",
-		paddingVertical: 8,
-	},
-	listSectionHeaderText: {
-		fontFamily: "Raleway_600SemiBold",
-		color: "white",
-	},
-	chip: {
-		borderWidth: 1,
-		borderRadius: 12,
-		borderColor: "grey",
-		backgroundColor: "grey",
-		paddingHorizontal: 8,
-		paddingVertical: 4,
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
 	},
 });

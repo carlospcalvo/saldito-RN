@@ -1,3 +1,4 @@
+import { SUPABASE_URL } from "@constants/Api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
 import * as aesjs from "aes-js";
@@ -62,13 +63,15 @@ class LargeSecureStore {
 		await AsyncStorage.setItem(key, encrypted);
 	}
 }
+// Workaround using IP
+// const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ?? "";
+const supabaseUrl = SUPABASE_URL ?? "";
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ?? "";
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 	auth: {
-		...(Platform.OS !== 'web' ? { storage: new LargeSecureStore() } : {}),
+		...(Platform.OS !== "web" ? { storage: new LargeSecureStore() } : {}),
 		autoRefreshToken: true,
 		persistSession: true,
 	},

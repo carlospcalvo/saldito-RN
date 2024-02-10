@@ -14,10 +14,8 @@ export default function AvatarList({ users }: AvatarListProps) {
 		return null;
 	}
 
-	const shownAvatars = [...users, ...users].slice(0, MAX_AVATARS_SHOWN);
-	const remainingAvatars = [...users, ...users].slice(
-		MAX_AVATARS_SHOWN
-	).length;
+	const shownAvatars = users.slice(0, MAX_AVATARS_SHOWN);
+	const remainingAvatars = users.slice(MAX_AVATARS_SHOWN).length;
 
 	return (
 		<View style={styles.container}>

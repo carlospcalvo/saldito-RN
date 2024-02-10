@@ -1,16 +1,22 @@
-import { Group, Payment, Transactions } from "@lib/types";
-import React, { createContext, useContext } from "react";
-// import USERS from "@/mock/users";
-// import TRANSACTIONS from "@/mock/transactions";
-// import { ExpenseInput } from "@/app/groups/[groupId]/new-expense/page";
+import {
+	Expense,
+	Group,
+	GroupID,
+	Member,
+	Payment,
+	Transactions,
+	UserID,
+} from "@lib/types";
+import React, { createContext, useContext, useMemo } from "react";
 import useUserGroups from "@hooks/services/groups/useUserGroups";
-import { User } from "@supabase/supabase-js";
-// import { usePathname, useRouter } from "next/navigation";
-import useCurrentUser from "@hooks/auth/useCurrentUser";
 import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
+import simplifyDebts from "@lib/debt_simplifier";
+import { mapTransactions, moveToFront } from "@lib/helpers/array-helpers";
+import useCurrentUser from "@hooks/auth/useCurrentUser";
 
 export interface IGroupContext {
-	currentUser: User | null | undefined;
+	currentGroup: Group | undefined;
+	members: Member[];
 	groups: Group[] | undefined;
 	isLoading: boolean;
 	isRefetching: boolean;
@@ -19,40 +25,79 @@ export interface IGroupContext {
 	) => Promise<QueryObserverResult<Group[], Error>>;
 	duePayments: Partial<Payment>[];
 	// addExpense: (newExpense: ExpenseInput) => void;
+	expenses: Expense[];
+	payments: Payment[];
+	transactions: Transactions;
+	orderedTxs: (string | Payment | Expense)[];
+	getMemberDuePayments: (memberId: UserID) => Partial<Payment>[];
 }
 
 export interface IContextProvider {
 	children: React.ReactNode;
+	id: GroupID;
 }
 
 export const GroupContext = createContext<IGroupContext | null>(null);
 
-export const GroupContextProvider = ({ children }: IContextProvider) => {
-	const { data: currentUser } = useCurrentUser();
+// TODO: implement with supabase subscription
+export const GroupContextProvider = ({ children, id }: IContextProvider) => {
 	const {
 		data: groups,
 		isLoading,
 		isError,
-		refetch,
+		refetch: refetchGroups,
 		isRefetching,
 	} = useUserGroups();
+	const { data: currentUser } = useCurrentUser();
 
-	// const currentGroup: Group | undefined = getCurrentGroup(pathname, groups);
-	// const duePayments = currentGroup ? simplifyDebts(currentGroup.members) : [];
+	const currentGroup: Group | undefined = groups?.find(
+		(group) => group.id === id
+	);
 
-	// const transactions = currentGroup
-	// ? [...currentGroup?.expenses, ...currentGroup?.payments]
-	// : [];
+	// Move current user so that it's displayed first on UIs
+	const members =
+		moveToFront(
+			currentGroup?.members ?? [],
+			currentUser?.id ?? "",
+			"user_id"
+		) ?? [];
+
+	// Expenses tab
+	const expenses = [...(currentGroup?.expenses ?? [])];
+	const payments = [...(currentGroup?.payments ?? [])];
+
+	const transactions = currentGroup ? [...expenses, ...payments] : [];
+
+	const orderedTxs = useMemo(
+		() => mapTransactions(transactions),
+		[transactions]
+	);
+
+	// Balances tab
+	const duePayments = simplifyDebts(currentGroup?.members);
+
+	function getMemberDuePayments(memberId: UserID) {
+		return duePayments.filter(
+			(payment) =>
+				payment.from_user === memberId || payment.to_user === memberId
+		);
+	}
 
 	const value: IGroupContext = {
-		currentUser,
+		currentGroup,
+		members,
 		groups: groups ?? [],
 		isLoading,
-		refetchGroups: refetch,
 		isRefetching,
+		refetchGroups,
 		// users: USERS,
 		// addExpense,
-		duePayments: [],
+		expenses,
+		payments,
+		transactions,
+		orderedTxs,
+		duePayments,
+		getMemberDuePayments,
 	};
 
 	return (
