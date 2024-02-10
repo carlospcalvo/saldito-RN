@@ -1,21 +1,19 @@
 import useExpenseStore from "@lib/expense-store";
-import { formatDecimal, removeFormatting } from "@lib/helpers/number-formatter";
 import { Member, UserID } from "@lib/types";
+import { round } from "./number-helpers";
 
 export function initializeParticipants({
 	amount,
 	userId,
 	participants,
 }: {
-	amount: string;
+	amount: number;
 	userId: string;
 	participants: Member[];
 }) {
 	for (const participant of participants) {
 		const value = participant.user_id === userId ? amount : undefined;
-		const expenseShare = +(
-			removeFormatting(amount) / participants.length
-		).toFixed(2);
+		const expenseShare = round(amount / participants.length);
 
 		useExpenseStore.setState((state) => ({
 			payers: new Map(state.payers).set(participant.user_id, value),
@@ -24,7 +22,7 @@ export function initializeParticipants({
 		useExpenseStore.setState((state) => ({
 			debtors: new Map(state.debtors).set(
 				participant.user_id,
-				formatDecimal(expenseShare)
+				expenseShare
 			),
 		}));
 	}
@@ -52,9 +50,7 @@ export function handleParticipantSelection(
 	// * Calculate updated share per participant.
 	// Add 1 if participant being selected, remove 1 if its being unselected
 	const totalParticipants = activeParticipants.length + (isSelected ? 1 : -1);
-	const participantShare = formatDecimal(
-		+(removeFormatting(totalAmount) / totalParticipants).toFixed(2) // Divide by total participant count
-	);
+	const participantShare = round(totalAmount / totalParticipants); // Divide by total participant count
 
 	// Update individual participant share based on selection state
 	for (const id of participants.keys()) {
@@ -92,7 +88,7 @@ export function updateParticipant(
 	const participantMap = useExpenseStore.getState()[participantGroup];
 	if (participantMap.has(id)) {
 		useExpenseStore.setState((prev) => ({
-			[participantGroup]: participantMap.set(id, formatDecimal(share)),
+			[participantGroup]: participantMap.set(id, share),
 		}));
 	} else {
 		console.error(
@@ -101,7 +97,7 @@ export function updateParticipant(
 	}
 }
 
-export function handleAmountChange(value: string, currentUserId: UserID) {
+export function handleAmountChange(value: number, currentUserId: UserID) {
 	const debtors = useExpenseStore.getState().debtors;
 	const activeDebtors = useExpenseStore
 		.getState()
@@ -110,26 +106,22 @@ export function handleAmountChange(value: string, currentUserId: UserID) {
 		.getState()
 		.getActiveParticipants("payers");
 
-	const amount = removeFormatting(value);
-	const expenseShare = +(amount / activeDebtors.length).toFixed(2);
+	const expenseShare = round(value / activeDebtors.length);
 
 	if (activePayers.length) {
 		useExpenseStore.getState().resetParticipants("payers");
 	}
 	useExpenseStore.setState((state) => ({
-		payers: new Map(state.payers).set(currentUserId, formatDecimal(amount)),
+		payers: new Map(state.payers).set(currentUserId, value),
 	}));
 
 	for (const debtor of debtors.keys()) {
 		useExpenseStore.setState((state) => ({
-			debtors: new Map(state.debtors).set(
-				debtor,
-				formatDecimal(expenseShare)
-			),
+			debtors: new Map(state.debtors).set(debtor, expenseShare),
 		}));
 	}
 
 	useExpenseStore.setState(() => ({
-		amount: formatDecimal(amount),
+		amount: value,
 	}));
 }

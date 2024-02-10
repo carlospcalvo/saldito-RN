@@ -9,7 +9,6 @@ import DateInput from "@components/ExpenseForm/DateInput";
 import ExpenseDescriptionInput from "@components/ExpenseForm/DescriptionInput";
 import ExpenseAmountInput from "@components/ExpenseForm/AmountInput";
 import ExpenseParticipants from "@components/ExpenseForm/ExpenseParticipants";
-import MoneyInput from "@inkindcards/react-native-money";
 
 export default function NewExpenseScreen() {
 	const { groupId } = useLocalSearchParams<{
@@ -41,8 +40,6 @@ export default function NewExpenseScreen() {
 		/>
 	);
 
-	const [bill, setBill] = useState<number | undefined>();
-
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
 			<ScrollView>
@@ -50,17 +47,6 @@ export default function NewExpenseScreen() {
 					<DateInput />
 					<ExpenseDescriptionInput />
 					<ExpenseAmountInput participants={sortedMembers} />
-					{/* <MoneyInput
-						// @ts-ignore
-						value={bill}
-						keyboardType="number-pad"
-						locale="es_AR"
-						placeholder="$0,00"
-						// @ts-ignore
-						onChangeText={(value: number, label: string) => {
-							setBill(value);
-						}}
-					/> */}
 				</View>
 				<Divider />
 				<View /* style={styles.participantContainer} */>

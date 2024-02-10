@@ -1,6 +1,6 @@
 import { format as formatDate } from "date-fns";
 import { create } from "zustand";
-import { ExpenseParticipant, UserID } from "./types";
+import { ExpenseParticipant, GroupID, UserID } from "./types";
 
 // type Participant = {
 // 	id: string;
@@ -11,52 +11,55 @@ import { ExpenseParticipant, UserID } from "./types";
 type State = {
 	date: string;
 	type: string;
-	amount: string | undefined;
+	amount: number | undefined;
 	description: string;
 	expense_participants: Partial<ExpenseParticipant>[];
 	created_by: UserID | undefined;
 	group_id: string | undefined;
-	payers: Map<string, string | undefined>;
-	debtors: Map<string, string | undefined>;
+	payers: Map<UserID, number | undefined>;
+	debtors: Map<UserID, number | undefined>;
 };
 
 type Actions = {
 	setDate: (date: Date) => void;
 	setDescription: (description: string) => void;
-	setAmount: (amount: string) => void;
+	setAmount: (amount: number) => void;
 	setCreatedBy: (userId: UserID | undefined) => void;
-	setGroupId: (groupId: string | undefined) => void;
-	setPayer: (id: UserID, amount: string) => void;
-	setDebtor: (id: UserID, amount: string) => void;
+	setGroupId: (groupId: GroupID | undefined) => void;
+	setPayer: (id: UserID, amount: number) => void;
+	setDebtor: (id: UserID, amount: number) => void;
 };
 
 type Helpers = {
+	reset: () => void;
 	getActiveParticipants: (group: "payers" | "debtors") => string[];
 	resetParticipants: (group?: "payers" | "debtors" | "all") => void;
 };
 
-const useExpenseStore = create<State & Actions & Helpers>((set, get) => ({
-	// * State
+const initialState: State = {
 	date: formatDate(new Date(), "yyyy-MM-dd"),
 	type: "expense", // ? maybe we can remove this and handle it on db
-	amount: undefined,
+	amount: 0,
 	description: "",
 	expense_participants: [],
 	created_by: undefined,
 	group_id: undefined,
 	payers: new Map(),
 	debtors: new Map(),
+};
+
+const useExpenseStore = create<State & Actions & Helpers>((set, get) => ({
+	// * State
+	...initialState,
 
 	// * Actions
 	setDate: (date: Date) =>
 		set(() => ({ date: formatDate(date, "yyyy-MM-dd") })),
 	setDescription: (description: string) => set(() => ({ description })),
-	setAmount: (amount: string) => set(() => ({ amount })),
-	setCreatedBy: (userId: UserID | undefined) =>
-		set(() => ({ created_by: userId })),
-	setGroupId: (groupId: string | undefined) =>
-		set(() => ({ group_id: groupId })),
-	setPayer: (id: UserID, amount: string) =>
+	setAmount: (amount) => set(() => ({ amount })),
+	setCreatedBy: (userId) => set(() => ({ created_by: userId })),
+	setGroupId: (groupId) => set(() => ({ group_id: groupId })),
+	setPayer: (id, amount) =>
 		set((state) => {
 			const updatedPayers = new Map(state.payers);
 			updatedPayers.set(id, amount);
@@ -70,7 +73,10 @@ const useExpenseStore = create<State & Actions & Helpers>((set, get) => ({
 		}),
 
 	// * Helpers
-	getActiveParticipants: (group: "payers" | "debtors") =>
+	reset: () => {
+		set(initialState);
+	},
+	getActiveParticipants: (group) =>
 		Array.from(get()[group])
 			.filter(([_, amount]) => amount)
 			?.map(([id]) => id) as UserID[],

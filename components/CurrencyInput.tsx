@@ -1,92 +1,60 @@
-import {
-	formatDecimal,
-	numberIsFormatted,
-} from "@lib/helpers/number-formatter";
-import React, { useState } from "react";
-import {
-	StyleProp,
-	StyleSheet,
-	Text,
-	TextInput,
-	TextStyle,
-	View,
-	ViewStyle,
-} from "react-native";
+import React from "react";
+import { StyleProp, StyleSheet, TextInputProps, TextStyle } from "react-native";
+import MoneyInput from "@inkindcards/react-native-money";
+import { Overwrite } from "@lib/types";
 
-interface CurrencyInputProps {
-	value?: string | undefined;
-	defaultValue?: string | undefined;
-	onChangeText: ((text: string) => void) | undefined;
+interface CustomTextInputProps {
+	value?: number | undefined;
+	defaultValue?: number | undefined;
+	onChangeText?: (value: number) => void;
 	disabled?: boolean;
-	prefix?: string;
-	customStyles?: {
-		container?: StyleProp<ViewStyle>;
-		prefix?: StyleProp<TextStyle>;
-		input?: StyleProp<TextStyle>;
-	};
+	style?: StyleProp<TextStyle>;
 }
+
+interface CurrencyInputProps
+	extends Overwrite<TextInputProps, CustomTextInputProps> {}
 
 export default function CurrencyInput({
 	value,
 	defaultValue,
 	onChangeText,
 	disabled = false,
-	prefix = "$",
-	customStyles,
+	style,
+	...props
 }: CurrencyInputProps) {
 	return (
-		<View style={[styles.container, customStyles?.container]}>
-			{prefix && (
-				<Text
-					style={[
-						styles.prefix,
-						customStyles?.prefix,
-						disabled && styles.disabledPrefix,
-					]}
-				>
-					{prefix}
-				</Text>
-			)}
-			<TextInput
-				keyboardType="decimal-pad"
-				placeholder="Monto"
-				editable={!disabled}
-				defaultValue={defaultValue}
-				value={value}
-				style={[
-					styles.input,
-					customStyles?.input,
-					disabled && styles.disabledInput,
-				]}
-				onChangeText={(text: string) => {
-					if (onChangeText) {
-						onChangeText(text);
-					}
-				}}
-			/>
-		</View>
+		<MoneyInput
+			locale="es_AR"
+			placeholder="$0,00"
+			{...props}
+			keyboardType="number-pad"
+			style={[
+				defaultStyles.input,
+				style,
+				disabled && defaultStyles.disabled,
+			]}
+			// @ts-ignore
+			defaultValue={defaultValue}
+			// @ts-ignore
+			value={!disabled ? value : 0}
+			// @ts-ignore
+			onChangeText={(value: number, label: string) => {
+				if (onChangeText) {
+					onChangeText(value);
+				}
+			}}
+		/>
 	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		flexDirection: "row",
-		alignItems: "center",
-	},
-	prefix: {
-		paddingRight: 4,
-		fontFamily: "Raleway_400Regular",
-	},
-	disabledPrefix: {
-		color: "grey",
-	},
+const defaultStyles = StyleSheet.create({
 	input: {
 		paddingVertical: 2,
 		borderBottomColor: "black",
 		borderBottomWidth: StyleSheet.hairlineWidth,
 		fontFamily: "Raleway_400Regular",
 	},
-	disabledInput: {
+	disabled: {
 		color: "grey",
 		borderBottomColor: "grey",
 		borderBottomWidth: StyleSheet.hairlineWidth,

@@ -8,7 +8,6 @@ import CurrencyInput from "@components/CurrencyInput";
 import useExpenseStore from "@lib/expense-store";
 import useCurrentUser from "@hooks/auth/useCurrentUser";
 import Dimensions from "@constants/Dimensions";
-import { removeFormatting } from "@lib/helpers/number-formatter";
 import { updateParticipant } from "@lib/helpers/expense-form-helpers";
 
 interface ParticipantProps {
@@ -47,8 +46,8 @@ export default function Participant({
 		toggleChecked();
 	}
 
-	function handleUserShareChange(value: string, id: string) {
-		const share = removeFormatting(value) ?? 0;
+	function handleUserShareChange(value: number, id: string) {
+		const share = value ?? 0;
 		return updateParticipant(id, share, type);
 	}
 
@@ -81,19 +80,14 @@ export default function Participant({
 					}}
 				>
 					<Text style={styles.name}>{item.profile.name}</Text>
+					{/* // TODO: Replace with new money input */}
 					<CurrencyInput
 						disabled={!activeParticipants.includes(item.user_id)}
 						value={participants[type].get(item.user_id)}
-						onChangeText={(value: string) => {
+						onChangeText={(value: number) => {
 							handleUserShareChange(value, item.user_id);
 						}}
-						customStyles={{
-							input: {
-								minWidth: 50,
-								textAlign: "center",
-								fontSize: 16,
-							},
-						}}
+						style={styles.contribution}
 					/>
 				</View>
 			</View>
@@ -147,5 +141,7 @@ export const styles = StyleSheet.create({
 		fontSize: 16,
 		fontFamily: "Raleway_400Regular",
 		marginLeft: "auto",
+		minWidth: 50,
+		textAlign: "center",
 	},
 });

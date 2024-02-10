@@ -2,8 +2,10 @@ import React from "react";
 import { View, Text, Alert } from "react-native";
 import { Stack, router } from "expo-router";
 import BackButton from "@components/BackButton";
+import useExpenseStore from "@lib/expense-store";
 
 export default function TransactionDetailLayout() {
+	const resetExpenseForm = useExpenseStore((state) => state.reset);
 	return (
 		<Stack>
 			<Stack.Screen
@@ -23,7 +25,12 @@ export default function TransactionDetailLayout() {
 				options={{
 					title: "Nuevo gasto",
 					headerLeft: () => (
-						<BackButton onPress={() => router.back()} />
+						<BackButton
+							onPress={() => {
+								resetExpenseForm();
+								router.back();
+							}}
+						/>
 					),
 					headerTitleStyle: {
 						fontFamily: "Raleway_700Bold",

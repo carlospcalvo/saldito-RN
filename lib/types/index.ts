@@ -1,3 +1,5 @@
+export type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
+
 export type UserID = string;
 export type GroupID = string;
 

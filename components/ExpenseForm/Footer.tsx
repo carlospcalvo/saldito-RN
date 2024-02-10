@@ -1,12 +1,8 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import useExpenseStore from "@lib/expense-store";
-import {
-	formatCurrency,
-	removeFormatting,
-} from "@lib/helpers/number-formatter";
+import { formatCurrency } from "@lib/helpers/number-formatter";
 import Dimensions from "@constants/Dimensions";
-import Colors from "@constants/Colors";
 
 export default function Footer() {
 	const { amount, payers } = useExpenseStore((state) => ({
@@ -16,7 +12,7 @@ export default function Footer() {
 
 	const getPayersTotal = () =>
 		Array.from(payers.values()).reduce((sum, amount) => {
-			return sum + (amount ? removeFormatting(amount) : 0);
+			return sum! + (amount ?? 0);
 		}, 0);
 
 	const payersTotal = getPayersTotal();
@@ -27,17 +23,14 @@ export default function Footer() {
 				style={{
 					textAlign: "right",
 					fontFamily:
-						payersTotal !== removeFormatting(amount!)
+						payersTotal !== amount!
 							? "Raleway_500Medium"
 							: "Raleway_400Regular",
-					color:
-						payersTotal !== removeFormatting(amount!)
-							? "red"
-							: "black",
+					color: payersTotal !== amount! ? "red" : "black",
 				}}
 			>
 				{`${formatCurrency(payersTotal)} de ${formatCurrency(
-					amount ? removeFormatting(amount) : 0
+					amount ?? 0
 				)}`}
 			</Text>
 		</View>

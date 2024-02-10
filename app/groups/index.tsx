@@ -2,7 +2,6 @@ import React, { memo } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { router } from "expo-router";
 import { FlashList } from "@shopify/flash-list";
-
 import UserTotalBalance from "@components/UserTotalBalance";
 import GroupCard from "@components/Groups/GroupCard";
 import { Group } from "@lib/types";
