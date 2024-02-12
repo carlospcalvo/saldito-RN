@@ -3,12 +3,10 @@ import { Button, useColorScheme } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome6";
 import { SplashScreen, Stack, useRouter } from "expo-router";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { useFonts } from "expo-font";
 import {
-	Raleway_100Thin,
-	Raleway_100Thin_Italic,
-	Raleway_200ExtraLight,
-	Raleway_200ExtraLight_Italic,
 	Raleway_300Light,
 	Raleway_300Light_Italic,
 	Raleway_400Regular,
@@ -16,18 +14,25 @@ import {
 	Raleway_500Medium,
 	Raleway_500Medium_Italic,
 	Raleway_600SemiBold,
-	Raleway_600SemiBold_Italic,
 	Raleway_700Bold,
-	Raleway_700Bold_Italic,
 	Raleway_800ExtraBold,
-	Raleway_800ExtraBold_Italic,
-	Raleway_900Black,
-	Raleway_900Black_Italic,
 } from "@expo-google-fonts/raleway";
 import { ApplicationProvider, Layout, Text } from "@ui-kitten/components";
 import * as eva from "@eva-design/eva";
 import { ThemeContext, ThemeKey } from "@contexts/ThemeContext";
-import { GroupContextProvider } from "@contexts/GroupContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: 1000 * 60 * 60 * 24, // 24 hours
+		},
+	},
+});
+
+const asyncStoragePersister = createAsyncStoragePersister({
+	storage: AsyncStorage,
+});
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -44,7 +49,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
 	const [loaded, error] = useFonts({
-		...FontAwesome.font,
+		// ...FontAwesome.font,
 		Raleway_300Light,
 		Raleway_300Light_Italic,
 		Raleway_400Regular,
@@ -77,7 +82,7 @@ export default function RootLayout() {
 function RootLayoutNav() {
 	const colorScheme = useColorScheme();
 	const router = useRouter();
-	const queryClient = new QueryClient();
+
 	const [theme, setTheme] = useState<ThemeKey>(colorScheme as ThemeKey);
 
 	const toggleTheme = () => {
@@ -88,7 +93,10 @@ function RootLayoutNav() {
 	return (
 		<ThemeContext.Provider value={{ theme, toggleTheme }}>
 			<ApplicationProvider {...eva} theme={eva[theme as ThemeKey]}>
-				<QueryClientProvider client={queryClient}>
+				<PersistQueryClientProvider
+					client={queryClient}
+					persistOptions={{ persister: asyncStoragePersister }}
+				>
 					<Stack>
 						<Stack.Screen
 							name="index"
@@ -131,7 +139,7 @@ function RootLayoutNav() {
 							}}
 						/>
 					</Stack>
-				</QueryClientProvider>
+				</PersistQueryClientProvider>
 			</ApplicationProvider>
 		</ThemeContext.Provider>
 	);
