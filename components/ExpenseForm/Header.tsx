@@ -1,7 +1,6 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Icon from "@expo/vector-icons/FontAwesome6";
-import { useShallow } from "zustand/react/shallow";
 import useExpenseStore from "@lib/expense-store";
 import Dimensions from "@constants/Dimensions";
 import { Member, UserID } from "@lib/types";
@@ -21,14 +20,10 @@ export default function Header({
 	type,
 }: HeaderProps) {
 	const { data: currentUser } = useCurrentUser();
-	const { amount, payers, debtors, getActiveParticipants } = useExpenseStore(
-		(state) => ({
-			amount: state.amount,
-			payers: state.payers,
-			debtors: state.debtors,
-			getActiveParticipants: state.getActiveParticipants,
-		})
-	);
+	const { amount, getActiveParticipants } = useExpenseStore((state) => ({
+		amount: state.amount,
+		getActiveParticipants: state.getActiveParticipants,
+	}));
 
 	const getSubtitle = () => {
 		let ids: UserID[] = getActiveParticipants(type);
@@ -110,14 +105,16 @@ export const styles = StyleSheet.create({
 	},
 	title: {
 		fontSize: 18,
-		fontFamily: "Raleway_600SemiBold",
+		color: "#4c4e50",
+		fontFamily: "Raleway_500Medium",
 	},
 	subtitle: {
 		fontSize: 14,
-		fontFamily: "Raleway_500Medium",
+		fontFamily: "Raleway_600SemiBold",
 	},
 	icon: {
 		marginLeft: "auto",
+		marginRight: 8,
 	},
 	listContainer: {
 		minHeight: 50,

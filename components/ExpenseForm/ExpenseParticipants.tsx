@@ -21,10 +21,7 @@ export default function ExpenseParticipants({
 	type,
 }: ExpenseParticipantsProps) {
 	const [expanded, toggleExpanded] = useToggle(false);
-	const getActiveParticipants = useExpenseStore(
-		(state) => state.getActiveParticipants
-	);
-	const hasActiveParticipants = getActiveParticipants(type).length > 0;
+	const amount = useExpenseStore((state) => state.amount);
 
 	return (
 		<>
@@ -34,7 +31,7 @@ export default function ExpenseParticipants({
 				participants={participants}
 				type={type}
 			/>
-			<CollapsableContainer expanded={expanded && hasActiveParticipants}>
+			<CollapsableContainer expanded={expanded && Boolean(amount)}>
 				<View style={styles.listContainer}>
 					<FlashList
 						data={participants}
@@ -55,50 +52,10 @@ export default function ExpenseParticipants({
 }
 
 export const styles = StyleSheet.create({
-	headerContainer: {
-		flexDirection: "row",
-		alignItems: "center",
-		paddingVertical: 8,
-		paddingHorizontal: 8,
-	},
-	textContainer: {
-		marginLeft: 16,
-		gap: 4,
-	},
-	title: {
-		fontSize: 18,
-		fontFamily: "Raleway_600SemiBold",
-	},
-	subtitle: {
-		fontSize: 14,
-		fontFamily: "Raleway_500Medium",
-	},
-	icon: {
-		marginLeft: "auto",
-	},
 	listContainer: {
 		minHeight: 50,
 		width: Dimensions.screen.width,
-		padding: 16,
-	},
-	itemContainer: {
-		paddingHorizontal: 4,
-		paddingVertical: 8,
-		borderBottomColor: "grey",
-		borderBottomWidth: StyleSheet.hairlineWidth,
-	},
-	avatarContainer: {
-		flexDirection: "row",
-		alignItems: "center",
-		gap: 12,
-	},
-	name: {
-		fontSize: 16,
-		fontFamily: "Raleway_500Medium",
-	},
-	contribution: {
-		fontSize: 16,
-		fontFamily: "Raleway_400Regular",
-		marginLeft: "auto",
+		paddingHorizontal: 16,
+		paddingBottom: 8,
 	},
 });

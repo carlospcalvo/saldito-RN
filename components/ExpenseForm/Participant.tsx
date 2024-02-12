@@ -96,32 +96,6 @@ export default function Participant({
 }
 
 export const styles = StyleSheet.create({
-	headerContainer: {
-		flexDirection: "row",
-		alignItems: "center",
-		paddingVertical: 8,
-		paddingHorizontal: 8,
-	},
-	textContainer: {
-		marginLeft: 16,
-		gap: 4,
-	},
-	title: {
-		fontSize: 18,
-		fontFamily: "Raleway_600SemiBold",
-	},
-	subtitle: {
-		fontSize: 14,
-		fontFamily: "Raleway_500Medium",
-	},
-	icon: {
-		marginLeft: "auto",
-	},
-	listContainer: {
-		minHeight: 50,
-		width: Dimensions.screen.width,
-		padding: 16,
-	},
 	itemContainer: {
 		paddingHorizontal: 4,
 		paddingVertical: 8,
