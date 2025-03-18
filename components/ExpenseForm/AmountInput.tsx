@@ -16,13 +16,19 @@ export default function ExpenseAmountInput({
 	participants: Member[];
 }) {
 	const { data: currentUser } = useCurrentUser();
-	const { amount, setAmount, getActiveParticipants, resetParticipants } =
-		useExpenseStore((state) => ({
-			amount: state.amount,
-			setAmount: state.setAmount,
-			getActiveParticipants: state.getActiveParticipants,
-			resetParticipants: state.resetParticipants,
-		}));
+	const {
+		amount,
+		currency,
+		setAmount,
+		getActiveParticipants,
+		resetParticipants,
+	} = useExpenseStore((state) => ({
+		amount: state.amount,
+		currency: state.currency,
+		setAmount: state.setAmount,
+		getActiveParticipants: state.getActiveParticipants,
+		resetParticipants: state.resetParticipants,
+	}));
 
 	const debouncedAmount = useDebounce(amount, 100);
 
@@ -49,9 +55,11 @@ export default function ExpenseAmountInput({
 	return (
 		<View style={styles.container}>
 			<CurrencyInput
+				currency={currency}
 				value={amount}
 				onChangeText={setAmount}
 				style={styles.input}
+				key={`${currency}-amount`}
 			/>
 		</View>
 	);
@@ -68,6 +76,6 @@ const styles = StyleSheet.create({
 	input: {
 		minWidth: 80,
 		fontSize: 28,
-		textAlign: "center",
+		// textAlign: "center",
 	},
 });

@@ -1,4 +1,5 @@
 import {
+	Pressable,
 	StyleProp,
 	StyleSheet,
 	Text,
@@ -7,28 +8,57 @@ import {
 	ViewStyle,
 } from "react-native";
 import React from "react";
+import Icon from "@expo/vector-icons/FontAwesome6";
 
 interface ChipProps {
 	text: React.ReactNode;
+	icon?: string;
+	selected?: boolean;
+	onPress?: VoidFunction;
 	style?: {
-		container: StyleProp<ViewStyle>;
-		text: StyleProp<TextStyle>;
+		container?: StyleProp<ViewStyle>;
+		selectedContainer?: StyleProp<ViewStyle>;
+		text?: StyleProp<TextStyle>;
+		selectedText?: StyleProp<TextStyle>;
+		icon?: StyleProp<TextStyle>;
+		selectedIcon?: StyleProp<TextStyle>;
 	};
 }
 
-export default function Chip({ text, style }: ChipProps) {
+export default function Chip({
+	text,
+	icon,
+	onPress,
+	selected,
+	style,
+}: ChipProps) {
+	const Container = onPress ? Pressable : View;
+
 	return (
-		<View
-			style={
-				style?.container
-					? [styles.container, style.container]
-					: styles.container
-			}
+		<Container
+			onPress={onPress}
+			style={[
+				styles.container,
+				style?.container,
+				selected && style?.selectedContainer,
+			]}
 		>
-			<Text style={style?.text ? [styles.text, style.text] : styles.text}>
+			{icon && (
+				<Icon
+					name={icon}
+					style={[style?.icon, selected && style?.selectedIcon]}
+				/>
+			)}
+			<Text
+				style={[
+					styles.text,
+					style?.text,
+					selected && style?.selectedText,
+				]}
+			>
 				{text}
 			</Text>
-		</View>
+		</Container>
 	);
 }
 

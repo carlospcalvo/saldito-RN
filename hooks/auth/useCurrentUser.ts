@@ -12,6 +12,5 @@ export default function useCurrentUser() {
 	return useQuery({
 		queryKey: ["user"],
 		queryFn: () => getUser(),
-		retry: 5,
 	});
 }

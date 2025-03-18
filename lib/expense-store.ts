@@ -12,12 +12,14 @@ type State = {
 	date: string;
 	type: string;
 	amount: number | undefined;
+	currency: string;
 	description: string;
 	expense_participants: Partial<ExpenseParticipant>[];
 	created_by: UserID | undefined;
 	group_id: string | undefined;
 	payers: Map<UserID, number | undefined>;
 	debtors: Map<UserID, number | undefined>;
+	category: string | undefined;
 };
 
 type Actions = {
@@ -28,6 +30,8 @@ type Actions = {
 	setGroupId: (groupId: GroupID | undefined) => void;
 	setPayer: (id: UserID, amount: number) => void;
 	setDebtor: (id: UserID, amount: number) => void;
+	setCategory: (categoryId: string) => void;
+	setCurrency: (code: string) => void;
 };
 
 type Helpers = {
@@ -40,12 +44,14 @@ const initialState: State = {
 	date: formatDate(new Date(), "yyyy-MM-dd"),
 	type: "expense", // ? maybe we can remove this and handle it on db
 	amount: 0,
+	currency: "ARS",
 	description: "",
 	expense_participants: [],
 	created_by: undefined,
 	group_id: undefined,
 	payers: new Map(),
 	debtors: new Map(),
+	category: undefined,
 };
 
 const useExpenseStore = create<State & Actions & Helpers>((set, get) => ({
@@ -71,6 +77,8 @@ const useExpenseStore = create<State & Actions & Helpers>((set, get) => ({
 			updatedDebtors.set(id, amount);
 			return { payers: updatedDebtors };
 		}),
+	setCategory: (categoryId) => set(() => ({ category: categoryId })),
+	setCurrency: (code) => set(() => ({ currency: code })),
 
 	// * Helpers
 	reset: () => {

@@ -15,7 +15,7 @@ const getUserGroups = async (): Promise<Group[]> => {
 			name, 
 			category,
 			image,
-			simplifyDebts:simplify_debts,
+			defaultCurrency:default_currency,
 			members(
 				user_id,
 				profile:profiles(
@@ -43,7 +43,7 @@ const getUserGroups = async (): Promise<Group[]> => {
 		.returns<Partial<Group>[]>();
 
 	if (error) {
-		console.error('Error fetching user groups',error.message)
+		console.error("Error fetching user groups", error.message);
 		throw error;
 	}
 
@@ -52,7 +52,7 @@ const getUserGroups = async (): Promise<Group[]> => {
 		name: group.name,
 		category: group.category,
 		image: `${SUPABASE_URL}/storage/v1/object/public/group_avatars/${group.image}`.trim(),
-		simplifyDebts: group.simplifyDebts,
+		defaultCurrency: group.defaultCurrency,
 		members: group.members as Member[],
 		expenses: group.expenses as Expense[],
 		payments: group.payments as Payment[],
@@ -68,6 +68,5 @@ export default function useUserGroups() {
 	return useQuery({
 		queryKey: ["userGroup"],
 		queryFn: () => getUserGroups(),
-		retry: 5,
 	});
 }

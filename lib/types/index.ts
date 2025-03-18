@@ -107,7 +107,7 @@ export type Group = {
 	name: string;
 	category: GroupCategory;
 	image: string;
-	simplifyDebts: boolean;
+	defaultCurrency: string;
 	userBalance: number;
 	members: Member[];
 	expenses: Expense[];
@@ -146,6 +146,13 @@ export type Payment = Transaction & {
 
 // Balance: Represents a user's balance (amount owed or owned).
 export type Balance = Map<number, number>;
+
+export type ExpenseCategory = {
+	created_at: string;
+	icon: string;
+	id: string;
+	name: string;
+};
 
 // Type Guard functions
 

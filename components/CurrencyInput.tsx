@@ -9,6 +9,7 @@ interface CustomTextInputProps {
 	onChangeText?: (value: number) => void;
 	disabled?: boolean;
 	style?: StyleProp<TextStyle>;
+	currency?: string;
 }
 
 interface CurrencyInputProps
@@ -20,12 +21,13 @@ export default function CurrencyInput({
 	onChangeText,
 	disabled = false,
 	style,
+	currency = "ARS",
 	...props
 }: CurrencyInputProps) {
 	return (
 		<MoneyInput
-			locale="es_AR"
-			placeholder="$0,00"
+			locale={getCurrencyLocale(currency)}
+			placeholder="0,00"
 			{...props}
 			keyboardType="number-pad"
 			style={[
@@ -45,6 +47,19 @@ export default function CurrencyInput({
 			}}
 		/>
 	);
+}
+
+function getCurrencyLocale(code = "ARS") {
+	switch (code) {
+		case "GBP":
+			return "en_GB";
+		case "BRL":
+			return "pt_BR";
+		case "EUR":
+			return "de_DE";
+		default:
+			return "es_AR";
+	}
 }
 
 const defaultStyles = StyleSheet.create({

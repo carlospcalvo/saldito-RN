@@ -111,6 +111,7 @@ export const styles = StyleSheet.create({
 	subtitle: {
 		fontSize: 14,
 		fontFamily: "Raleway_600SemiBold",
+		paddingVertical: 4,
 	},
 	icon: {
 		marginLeft: "auto",

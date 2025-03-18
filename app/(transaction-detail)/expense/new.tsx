@@ -1,14 +1,28 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import {
+	Alert,
+	Modal,
+	Pressable,
+	SafeAreaView,
+	ScrollView,
+	StyleProp,
+	StyleSheet,
+	Text,
+	View,
+	ViewStyle,
+} from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
 import useCurrentUser from "@hooks/auth/useCurrentUser";
 import useGroupMembers from "@hooks/services/groups/useGroupMembers";
 import useExpenseStore from "@lib/expense-store";
-import { moveToFront } from "@lib/helpers/array-helpers";
 import DateInput from "@components/ExpenseForm/DateInput";
 import ExpenseDescriptionInput from "@components/ExpenseForm/DescriptionInput";
 import ExpenseAmountInput from "@components/ExpenseForm/AmountInput";
 import ExpenseParticipants from "@components/ExpenseForm/ExpenseParticipants";
+import CategoryInput from "@components/ExpenseForm/CategoryInput";
+import CurrencyPicker from "@components/ExpenseForm/CurrencyPicker";
+import { getParticipants } from "@lib/helpers/string-helpers";
+import Divider from "@components/Divider";
 
 export default function NewExpenseScreen() {
 	const { groupId } = useLocalSearchParams<{
@@ -24,42 +38,85 @@ export default function NewExpenseScreen() {
 		state.setGroupId(groupId);
 	}, []);
 
-	// console.log(state);
-
-	const sortedMembers = useMemo(
-		() => moveToFront(members ?? [], currentUser?.id ?? "", "user_id"),
-		[members, currentUser]
-	);
-
-	const Divider = () => (
-		<View
-			style={{
-				borderBottomColor: "grey",
-				borderBottomWidth: StyleSheet.hairlineWidth,
-			}}
-		/>
-	);
-
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
 			<ScrollView>
 				<View style={styles.mainContainer}>
 					<DateInput />
 					<ExpenseDescriptionInput />
-					<ExpenseAmountInput participants={sortedMembers} />
+					<View style={{ flexDirection: "row", gap: 8 }}>
+						<CurrencyPicker />
+						<ExpenseAmountInput participants={members ?? []} />
+					</View>
+					{/* <View
+						style={{
+							flexDirection: "row",
+							alignItems: "center",
+							marginTop: 8,
+							gap: 6,
+						}}
+					>
+						<Text style={{ fontFamily: "Raleway_500Medium" }}>
+							Pagado por:{" "}
+						</Text>
+						<Pressable
+							style={styles.payersButton}
+							onPress={() =>
+								router.push(
+									`/new-expense-payers?groupId=${groupId}`
+								)
+							}
+						>
+							<Text>
+								{getParticipants({
+									members,
+									userId: currentUser?.id,
+									type: "payers",
+								})}
+							</Text>
+						</Pressable>
+					</View>
+					<View
+						style={{
+							flexDirection: "row",
+							alignItems: "center",
+							marginTop: 12,
+							gap: 6,
+						}}
+					>
+						<Text style={{ fontFamily: "Raleway_500Medium" }}>
+							Dividido entre:
+						</Text>
+						<Pressable
+							style={styles.payersButton}
+							onPress={() =>
+								router.push(
+									`/new-expense-debtors?groupId=${groupId}`
+								)
+							}
+						>
+							<Text>
+								{getParticipants({
+									members,
+									userId: currentUser?.id,
+									type: "debtors",
+								})}
+							</Text>
+						</Pressable>
+					</View> */}
 				</View>
-				<Divider />
-				<View /* style={styles.participantContainer} */>
-					<ExpenseParticipants
-						participants={sortedMembers}
-						type="payers"
-					/>
-					<Divider />
-					<ExpenseParticipants
-						participants={sortedMembers}
-						type="debtors"
-					/>
-					<Divider />
+				<View style={styles.lowerContainer}>
+					<CategoryInput />
+					<View style={styles.participantContainer}>
+						<ExpenseParticipants
+							participants={members ?? []}
+							type="payers"
+						/>
+						<ExpenseParticipants
+							participants={members ?? []}
+							type="debtors"
+						/>
+					</View>
 				</View>
 			</ScrollView>
 		</SafeAreaView>
@@ -68,11 +125,15 @@ export default function NewExpenseScreen() {
 
 const styles = StyleSheet.create({
 	mainContainer: {
-		flex: 1,
+		// flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
 		padding: 4,
-		paddingVertical: 8,
+		paddingVertical: 16,
+	},
+	lowerContainer: {
+		flex: 1,
+		backgroundColor: "white",
 	},
 	expenseDate: {
 		borderRadius: 8,
@@ -95,5 +156,24 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		paddingVertical: 4,
 		fontFamily: "Raleway_400Regular",
+	},
+	participantContainer: {
+		// paddingTop: 8,
+	},
+	payersButton: {
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+		backgroundColor: "white",
+		borderRadius: 8,
+
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 1,
+		},
+		shadowOpacity: 0.2,
+		shadowRadius: 1.41,
+
+		elevation: 2,
 	},
 });

@@ -44,7 +44,6 @@ const createGroup = async (values: CreateGroupParams) => {
 		.insert({
 			...values,
 			admin: user?.id,
-			simplify_debts: true,
 			image: imagePath,
 		})
 		.select();

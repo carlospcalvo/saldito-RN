@@ -28,14 +28,14 @@ export default function Participant({
 	const participantType = type.slice(0, -1) as "payer" | "debtor";
 	const { data: currentUser } = useCurrentUser();
 	const isCurrentUser = item.user_id === currentUser?.id;
-	const { amount, participants, getActiveParticipants } = useExpenseStore(
+	const { currency, participants, getActiveParticipants } = useExpenseStore(
 		(state) => ({
-			amount: state.amount,
 			participants: {
 				payers: state.payers,
 				debtors: state.debtors,
 			},
 			getActiveParticipants: state.getActiveParticipants,
+			currency: state.currency,
 		})
 	);
 	const activeParticipants = getActiveParticipants(type);
@@ -88,6 +88,8 @@ export default function Participant({
 							handleUserShareChange(value, item.user_id);
 						}}
 						style={styles.contribution}
+						currency={currency}
+						key={`${currency}-${type}-${item.user_id}`}
 					/>
 				</View>
 			</View>

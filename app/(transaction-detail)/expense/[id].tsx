@@ -17,7 +17,6 @@ import {
 	View,
 } from "react-native";
 
-// TODO: Find a decent place for this
 export default function ExpenseDetailScreen() {
 	const { id, groupId } = useLocalSearchParams<{
 		id: string;

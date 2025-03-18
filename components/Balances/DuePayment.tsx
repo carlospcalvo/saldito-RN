@@ -25,7 +25,14 @@ export default function DuePayment({
 	return (
 		<View style={styles.container}>
 			{userId !== currentUser?.id ? (
-				<Text style={[styles.text, styles.debtText]}>
+				<Text
+					style={[
+						styles.text,
+						userId === from_user
+							? styles.debtText
+							: styles.creditText,
+					]}
+				>
 					{userId === from_user
 						? `Debe ${formatCurrency(amount)} a ${payee}`
 						: `${payer} le debe ${formatCurrency(amount)}`}

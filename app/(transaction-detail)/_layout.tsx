@@ -1,5 +1,4 @@
 import React from "react";
-import { View, Text, Alert } from "react-native";
 import { Stack, router } from "expo-router";
 import BackButton from "@components/BackButton";
 import useExpenseStore from "@lib/expense-store";

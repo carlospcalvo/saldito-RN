@@ -4,18 +4,33 @@ import useExpenseStore from "@lib/expense-store";
 import { formatCurrency } from "@lib/helpers/number-formatter";
 import Dimensions from "@constants/Dimensions";
 
-export default function Footer() {
-	const { amount, payers } = useExpenseStore((state) => ({
+interface FooterProps {
+	type: "payers" | "debtors";
+}
+
+export default function Footer({ type }: FooterProps) {
+	const { amount, currency, participants } = useExpenseStore((state) => ({
 		amount: state.amount,
-		payers: state.payers,
+		currency: state.currency,
+		participants: state[type],
 	}));
 
-	const getPayersTotal = () =>
-		Array.from(payers.values()).reduce((sum, amount) => {
+	const getParticipantsTotal = () =>
+		Array.from(participants.values()).reduce((sum, amount) => {
 			return sum! + (amount ?? 0);
 		}, 0);
 
-	const payersTotal = getPayersTotal();
+	const participantsTotal = getParticipantsTotal();
+
+	const currencyFormatter = new Intl.NumberFormat(
+		currency === "EUR" ? "de-DE" : "es-AR",
+		{
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2,
+			currency,
+			style: "currency",
+		}
+	);
 
 	return (
 		<View style={{ paddingVertical: 8 }}>
@@ -23,15 +38,15 @@ export default function Footer() {
 				style={{
 					textAlign: "right",
 					fontFamily:
-						payersTotal !== amount!
+						participantsTotal !== amount!
 							? "Raleway_500Medium"
 							: "Raleway_400Regular",
-					color: payersTotal !== amount! ? "red" : "black",
+					color: participantsTotal !== amount! ? "red" : "black",
 				}}
 			>
-				{`${formatCurrency(payersTotal)} de ${formatCurrency(
-					amount ?? 0
-				)}`}
+				{`${currencyFormatter.format(
+					participantsTotal ?? 0
+				)} de ${currencyFormatter.format(amount ?? 0)}`}
 			</Text>
 		</View>
 	);

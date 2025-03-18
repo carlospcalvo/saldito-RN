@@ -1,8 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 // import { SUPABASE_URL } from "@constants/Api";
+import { moveToFront } from "@lib/helpers/array-helpers";
 import supabase from "@lib/supabase";
+import { Member } from "@lib/types";
 
-const getGroupMembers = async (id: string) => {
+const getGroupMembers = async (id: string): Promise<Member[]> => {
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
 	const { data, error } = await supabase
 		.from("members")
 		.select(
@@ -18,7 +23,7 @@ const getGroupMembers = async (id: string) => {
 		throw error;
 	}
 
-	return data;
+	return moveToFront(data, user?.id ?? "", "user_id") as Member[];
 };
 
 /**
@@ -30,6 +35,5 @@ export default function useGroupMembers(id: string) {
 	return useQuery({
 		queryKey: ["groupMembers"],
 		queryFn: () => getGroupMembers(id),
-		retry: 5,
 	});
 }

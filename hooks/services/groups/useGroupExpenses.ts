@@ -6,15 +6,15 @@ const getGroupExpenses = async (id: string) => {
 	const { data, error } = await supabase
 		.from("expenses")
 		.select(`*, expense_participants(*)`)
-		.eq('group_id', id);
+		.eq("group_id", id);
 
 	if (error) {
-		console.error('Error fetching group expenses',error.message)
+		console.error("Error fetching group expenses", error.message);
 		throw error;
 	}
 
 	return data;
-}
+};
 
 /**
  * Hook that queries a group's expenses.
@@ -25,6 +25,5 @@ export default function useGroupExpenses(id: string) {
 	return useQuery({
 		queryKey: ["groupExpenses"],
 		queryFn: () => getGroupExpenses(id),
-		retry: 5,
 	});
 }

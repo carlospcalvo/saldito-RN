@@ -61,12 +61,12 @@ const styles = StyleSheet.create({
 	button: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: 6,
+		gap: 8,
 		borderRadius: 8,
 		// backgroundColor: "#dcdee0",
 		backgroundColor: "white",
-		paddingVertical: 4,
-		paddingHorizontal: 8,
+		paddingVertical: 8,
+		paddingHorizontal: 12,
 
 		shadowColor: "#000",
 		shadowOffset: {
@@ -82,7 +82,9 @@ const styles = StyleSheet.create({
 		opacity: 0.5,
 	},
 	icon: {
-		color: "#a955f7",
+		// color: "#a955f7",
+		color: "#a78bfa",
+		fontSize: 18,
 	},
 	currentValueText: {
 		fontFamily: "Raleway_400Regular",

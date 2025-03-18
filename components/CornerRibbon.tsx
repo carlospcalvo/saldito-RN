@@ -54,13 +54,13 @@ export default function CornerRibbon({ category }: CornerButtonProps) {
 function categoryToColor(category: GroupCategory) {
 	switch (category) {
 		case GroupCategory.FAMILY:
-			return "violet";
+			return "#a78bfa";
 		case GroupCategory.WORK:
-			return "orange";
+			return "#fb923c";
 		case GroupCategory.FRIENDS:
-			return "blue";
+			return "#338EF7";
 		case GroupCategory.TRAVEL:
-			return "green";
+			return "#45D483";
 		default:
 			return "gray";
 	}

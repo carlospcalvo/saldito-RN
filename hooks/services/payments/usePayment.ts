@@ -43,6 +43,5 @@ export default function usePayment(id: string) {
 	return useQuery({
 		queryKey: ["payment"],
 		queryFn: () => getPayment(id),
-		retry: 5,
 	});
 }

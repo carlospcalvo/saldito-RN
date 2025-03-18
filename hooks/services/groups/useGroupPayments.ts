@@ -6,15 +6,15 @@ const getGroupPayments = async (id: string) => {
 	const { data, error } = await supabase
 		.from("payments")
 		.select(`*`)
-		.eq('group_id', id);
+		.eq("group_id", id);
 
 	if (error) {
-		console.error('Error fetching group payments',error.message)
+		console.error("Error fetching group payments", error.message);
 		throw error;
 	}
 
 	return data;
-}
+};
 
 /**
  * Hook that queries a group's payments.
@@ -25,6 +25,5 @@ export default function useGroupPayments(id: string) {
 	return useQuery({
 		queryKey: ["groupPayments"],
 		queryFn: () => getGroupPayments(id),
-		retry: 5,
 	});
 }

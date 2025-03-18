@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { Member } from "@lib/types";
 import CollapsableContainer from "@components/CollapsableContainer";
@@ -24,7 +24,14 @@ export default function ExpenseParticipants({
 	const amount = useExpenseStore((state) => state.amount);
 
 	return (
-		<>
+		<View
+			style={
+				type === "payers" && {
+					borderBottomColor: "grey",
+					borderBottomWidth: StyleSheet.hairlineWidth,
+				}
+			}
+		>
 			<Header
 				expanded={expanded}
 				onPress={toggleExpanded}
@@ -43,11 +50,11 @@ export default function ExpenseParticipants({
 							/>
 						)}
 						estimatedItemSize={50}
-						ListFooterComponent={Footer}
+						ListFooterComponent={<Footer type={type} />}
 					/>
 				</View>
 			</CollapsableContainer>
-		</>
+		</View>
 	);
 }
 
@@ -56,6 +63,6 @@ export const styles = StyleSheet.create({
 		minHeight: 50,
 		width: Dimensions.screen.width,
 		paddingHorizontal: 16,
-		paddingBottom: 8,
+		paddingBottom: 32,
 	},
 });

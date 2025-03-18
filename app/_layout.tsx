@@ -121,21 +121,39 @@ function RootLayoutNav() {
 							options={{ headerShown: false }}
 						/>
 						<Stack.Screen
-							name="modal"
+							name="new-expense-payers"
 							options={{
 								presentation: "modal",
+								title: "¿Quién pagó?",
+								headerTitleStyle: {
+									fontFamily: "Raleway_700Bold",
+								},
 								headerLeft: () => (
 									<Button
-										title="Cerrar"
+										title="Cancelar"
 										onPress={() => router.back()}
 									/>
 								),
-								headerRight: () => (
+								// Add a placeholder button without the `onPress` to avoid flicker
+								headerRight: () => <Button title="Guardar" />,
+							}}
+						/>
+						<Stack.Screen
+							name="new-expense-debtors"
+							options={{
+								presentation: "modal",
+								title: "¿Quiénes participaron?",
+								headerTitleStyle: {
+									fontFamily: "Raleway_700Bold",
+								},
+								headerLeft: () => (
 									<Button
-										title="OK"
+										title="Cancelar"
 										onPress={() => router.back()}
 									/>
 								),
+								// Add a placeholder button without the `onPress` to avoid flicker
+								headerRight: () => <Button title="Guardar" />,
 							}}
 						/>
 					</Stack>

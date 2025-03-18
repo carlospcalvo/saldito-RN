@@ -1,3 +1,4 @@
+import useExpenseStore from "@lib/expense-store";
 import { formatCurrencyRounded } from "@lib/helpers/number-formatter";
 import { ExpenseParticipant, Member, UserID } from "@lib/types";
 
@@ -59,4 +60,63 @@ export function formatExpenseLabel({
  */
 export function capitalizeFirstLetter(str: string) {
 	return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/**
+ * Interface representing the context for participant description generation.
+ */
+interface ParticipantContext {
+	members: Member[] | undefined;
+	userId: UserID | undefined;
+	type: "payers" | "debtors";
+}
+
+/**
+ * Generates a human-readable string representing expense participants, considering the user's perspective and context.
+ *
+ * @param context - Object containing information about members, user ID, and participant type.
+ * @returns  A string describing the expense participants in a user-friendly format.
+ */
+export function getParticipants({
+	members = [],
+	userId,
+	type,
+}: ParticipantContext) {
+	if (!userId) {
+		return;
+	}
+	const amount = useExpenseStore.getState().amount;
+	let ids: UserID[] = useExpenseStore.getState().getActiveParticipants(type);
+
+	if (ids.length === 0) {
+		if (!!amount) {
+			return type === "payers" ? "Paga dios?" : "No participó nadie?";
+		} else {
+			return type === "payers" ? "Vos" : "Todos";
+		}
+	}
+
+	if (ids.length === members.length) {
+		return "Todos";
+	}
+
+	if (ids.includes(userId)) {
+		switch (ids.length) {
+			case 1:
+				return "Vos";
+			case 2:
+				return `Vos y 1 miembro más`;
+			default:
+				return `Vos y ${ids.length - 1} miembros más`;
+		}
+	}
+
+	if (ids.length === 1) {
+		return members.find((participant) => participant.user_id === ids[0])
+			?.profile.name;
+	}
+
+	if (ids.length > 1) {
+		return `${ids.length} miembros`;
+	}
 }

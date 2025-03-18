@@ -40,8 +40,7 @@ const getExpense = async (id: string): Promise<ExpenseDetail> => {
  */
 export default function useExpense(id: string) {
 	return useQuery({
-		queryKey: ["expense"],
+		queryKey: [`expense-${id}`],
 		queryFn: () => getExpense(id),
-		retry: 5,
 	});
 }
